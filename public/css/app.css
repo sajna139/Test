@@ -1,0 +1,15 @@
+.card-header{
+   
+    text-align: center;
+    font-weight: bold;
+    font-size: large;
+   
+}
+
+#list-heading{
+    text-align: center;
+    font-weight: bold;
+    background-color: rgb(95, 208, 212);
+    padding: 10px;
+}
+
