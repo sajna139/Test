@@ -47,45 +47,67 @@ class SalesController extends Controller
     }
 
     public function sales_report(Request $request) {
-        $sales_data = "";
+        
+        $sales_data = $message = [];
+
         $products = Product::get();
+
         $customers = Customer::get();
+
         $sales = Sales::get();
+
         $old_values = ['sales_quandity' => $request->sales_quandity,'c_name_or_email' => $request->c_name_or_email];
 
-        return view('sales-report',compact('products','customers','sales','sales_data','old_values'));
+        return view('sales-report',compact('products','customers','sales','sales_data','old_values','message'));
          
     }
 
     public function sales_report_result(Request $request) {
-        
+
+        $sales_data = $message = [];
+       
         $sales_table = (new Sales())->getTable();
+
         $customer_table = (new Customer())->getTable();
+
         $product_table = (new Product())->getTable();
 
         $sales_count = $request->sales_quandity;
 
         $customer_name_or_email = $request->c_name_or_email;
-
+        
         $old_values = ['sales_quandity' => $request->sales_quandity,'c_name_or_email' => $request->c_name_or_email];
-
-        $sales_data = Sales::select($customer_table.'.name', $customer_table.'.email',$customer_table.'.dob',$sales_table.'.quantity',
-        $product_table.'.product_name',$product_table.'.price')
-        ->join($customer_table, $customer_table.'.id', $sales_table.'.customer_id')
-        ->join($product_table, $product_table.'.id', $sales_table.'.item');
-        if(isset($request->sales_quandity)) {
+        
+        if($sales_count !="" || $customer_name_or_email !=""){
             
-            $sales_data = $sales_data->where($sales_table.'.quantity',$sales_count);    
-         }
+            $sales_data = Sales::select($customer_table.'.name', $customer_table.'.email',$customer_table.'.dob',$sales_table.'.quantity',
+            $product_table.'.product_name',$product_table.'.price')
+            ->join($customer_table, $customer_table.'.id', $sales_table.'.customer_id')
+            ->join($product_table, $product_table.'.id', $sales_table.'.item');
+    
+            if(isset($request->sales_quandity)) {
+                
+                $sales_data = $sales_data->where($sales_table.'.quantity',$sales_count);    
+            }
+    
+            if(isset($request->c_name_or_email)) {
+                
+                $sales_data = $sales_data->where($customer_table.'.name',$customer_name_or_email)
+                                ->orWhere($customer_table.'.email',$customer_name_or_email) ;    
+    
+            }
 
-         if(isset($request->c_name_or_email)) {
+            $sales_data = $sales_data->get();
             
-            $sales_data = $sales_data->where($customer_table.'.name',$customer_name_or_email)
-                            ->orWhere($customer_table.'.email',$customer_name_or_email) ;    
-         }
-         $sales_data = $sales_data->get();
-      
-        return view('sales-report',compact('sales_data','old_values'));
+            }else{
+
+                $message = "Any of the Search By Content is Required";
+            }
+
+            
+
+        return view('sales-report',compact('sales_data','old_values','message'));
         
     }
+
 }

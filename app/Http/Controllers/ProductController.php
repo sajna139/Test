@@ -30,8 +30,7 @@ class ProductController extends Controller
             'price.required' => "Enter Price",
         
         ]);
-
-
+           
             $product = new Product();
             $product->product_name = $request->product_name;
             $product->category_id = $request->category;
@@ -47,7 +46,8 @@ class ProductController extends Controller
         $product_table = (new Product())->getTable();
         $category_table = (new Category())->getTable();
         $products = Product::select( $product_table.'.id as product_id', $product_table.'.product_name', $product_table.'.category_id', $product_table.'.price', $category_table.'.name')
-                     ->join($category_table, $category_table.'.id', $product_table.'.category_id')->get();             
+                     ->join($category_table, $category_table.'.id', $product_table.'.category_id')
+                     ->orderBy($product_table.'.id','ASC')->get();             
         return view('product-show',compact('products'));
 
     }
@@ -56,10 +56,14 @@ class ProductController extends Controller
        
         $product_table = (new Product())->getTable();
         $category_table = (new Category())->getTable();
+
+        $categories = Category::get();
         $product = Product::select( $product_table.'.id as product_id', $product_table.'.product_name', $product_table.'.category_id', $product_table.'.price', $category_table.'.name')
                     ->join($category_table, $category_table.'.id', $product_table.'.category_id')
-                    ->where($product_table.'.id', $id)->first();     
-        return view('product-edit',compact('product'));
+                    ->where($product_table.'.id', $id)
+                    ->first();     
+
+        return view('product-edit',compact('product','categories'));
       }
     
     public function update(Request $request,$id){

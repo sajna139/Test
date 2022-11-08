@@ -36,15 +36,15 @@
                         <div class="form-group">
                             <label>Category</label>
                             <select class="form-control" name="category" id="category">
-                                <option value="{{$product->name}}" selected>{{$product->name}}</option>
-                                <option value="1">Mobile</option>
-                                <option value="2">Computer</option>
-                                <option value="3">Cables</option>
-                                @if($errors->has('category'))
+                                @foreach($categories as $category)
+                                <option value="{{$category->id}}" {{$product->category_id == $category->id ? "selected" : "" }}>{{$category->name}}</option>
+                                @endforeach
+                            </select>    
+                                 @if($errors->has('category'))
                                 <p style="color: red">
                                 {{$errors->first('category')}} 
                                 @endif    
-                            </select>    
+                                </p>
                         </div>
                         <div class="form-group">
                             <label for="price" >Price</label>
